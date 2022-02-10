@@ -23,6 +23,7 @@ type box struct {
 	height int
 }
 
+// Receiver
 func (b *box) volume() int {
 	v := b.height * b.length * b.width
 	return v
