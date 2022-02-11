@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
 func myFunc(s string) {
@@ -24,7 +23,7 @@ func main() {
 
 	go myFunc2("going")
 
-	time.Sleep(time.Second)
+	//	time.Sleep(time.Second)
 
 	fmt.Println("Done")
 

@@ -2,38 +2,28 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
+	"strconv"
+	"time"
 )
 
 func main() {
 	fmt.Println("Begin")
 
-	//
-	resp := SendPostRequest("https://jsonplaceholder.typicode.com/todos/1", []byte{})
-	fmt.Println("Response Code", resp.StatusCode)
+	done := make(chan string)
+	fmt.Println("Main going to call hello go goroutine 1")
+	go hello(1, 3, done)
+	fmt.Println("Main going to call hello go goroutine 2")
+	go hello(2, 1, done)
+	y := <-done
+	fmt.Println("Main received data x", y)
+	y = <-done
+	fmt.Println("Main received data y", y)
 
-	orderChan := make(chan *http.Response)
-	go SendPostAsync("https://jsonplaceholder.typicode.com/todos/2", []byte{}, orderChan)
-	orderResponse := <-orderChan
-	defer orderResponse.Body.Close()
-	bytes, _ := ioutil.ReadAll(orderResponse.Body)
-	fmt.Println(string(bytes))
 }
 
-func SendPostAsync(url string, body []byte, rc chan *http.Response) {
-	fmt.Println("Sending request")
-	response, err := http.Get(url)
-	if err != nil {
-		panic(err)
-	}
-	rc <- response
-}
-func SendPostRequest(url string, body []byte) *http.Response {
-	fmt.Println("Sending request")
-	response, err := http.Get(url)
-	if err != nil {
-		panic(err)
-	}
-	return response
+func hello(num int, duration int, done chan string) {
+	fmt.Println("Hello(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
+	time.Sleep(time.Duration(duration) * time.Second)
+	fmt.Println("Hello(" + strconv.Itoa(num) + ") awake.")
+	done <- strconv.Itoa(num)
 }
