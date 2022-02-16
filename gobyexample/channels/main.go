@@ -33,14 +33,12 @@ func main() {
 
 }
 
-func runFive() {
+func runFive() { // removing channel receivers as a test.
 	done := make(chan string)
 	fmt.Println("Main going to call hello go goroutine 1")
 	go hello(1, 5, done)
 	fmt.Println("Main going to call hello go goroutine 2")
 	go hello(2, 1, done)
-	// removing "channel receivers" as a test
-
 }
 
 func runFour() {
@@ -112,4 +110,5 @@ func hello(num int, duration int, done chan string) {
 	time.Sleep(time.Duration(duration) * time.Second)
 	fmt.Println("Hello(" + strconv.Itoa(num) + ") awake.")
 	done <- strconv.Itoa(num)
+	fmt.Println("End of hello()")
 }
