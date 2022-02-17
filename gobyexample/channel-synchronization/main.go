@@ -28,18 +28,24 @@ func main() {
 	}
 }
 
-func printChannelDeets(c *chan string) {
-	fmt.Println("Length", len(*c), "Capacity", cap(*c))
+func printChannelDeets(pos int, c chan string) {
+	fmt.Println("Pos", pos, "Length", len(c), "Capacity", cap(c))
 }
 
 func runOne() { //unbuffered. Will not work due to channel being occupied.
-	done := make(chan string)
-	printChannelDeets(&done)
-	go hello(1, 1, done)
-	printChannelDeets(&done)
-	go hello(2, 2, done)
-	printChannelDeets(&done)
-	//	<-done
+	done := make(chan string, 2)
+	printChannelDeets(1, done)
+	go hello(1, 2, done)
+	go hello(2, 1, done)
+	go hello(3, 1, done)
+	printChannelDeets(2, done)
+	fmt.Println(<-done)
+	printChannelDeets(3, done)
+	fmt.Println(<-done)
+	printChannelDeets(4, done)
+	fmt.Println(<-done)
+
+	printChannelDeets(5, done)
 	fmt.Println("Exiting runOne()")
 }
 

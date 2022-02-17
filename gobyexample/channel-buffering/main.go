@@ -28,29 +28,29 @@ func main() {
 	}
 }
 
-func printChannelDeets(c *chan string) {
-	fmt.Println("Length", len(*c), "Capacity", cap(*c))
+func printChannelDeets(c chan string) {
+	fmt.Println("Length", len(c), "Capacity", cap(c))
 }
 
 func runTwo() { //buffered
 	done := make(chan string, 2)
-	printChannelDeets(&done)
+	printChannelDeets(done)
 	done <- "unbuffered 1"
-	printChannelDeets(&done)
+	printChannelDeets(done)
 	done <- "unbuffered 2"
-	printChannelDeets(&done)
+	printChannelDeets(done)
 	fmt.Println(<-done)
-	printChannelDeets(&done)
+	printChannelDeets(done)
 	fmt.Println(<-done)
-	printChannelDeets(&done)
+	printChannelDeets(done)
 
 }
 
 func runOne() { //unbuffered. Will not work due to channel being occupied.
 	done := make(chan string)
-	printChannelDeets(&done)
+	printChannelDeets(done)
 	done <- "unbuffered 1"
-	printChannelDeets(&done)
+	printChannelDeets(done)
 	done <- "unbuffered 2" // will fail here with deadlock error
 	fmt.Println(<-done)
 	fmt.Println(<-done)
