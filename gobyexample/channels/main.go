@@ -35,22 +35,22 @@ func main() {
 
 func runFive() { // removing channel receivers as a test.
 	done := make(chan string)
-	fmt.Println("Main going to call hello go goroutine 1")
-	go hello(1, 5, done)
-	fmt.Println("Main going to call hello go goroutine 2")
-	go hello(2, 1, done)
+	fmt.Println("Main going to call myAsyncFunc go goroutine 1")
+	go myAsyncFunc(1, 5, done)
+	fmt.Println("Main going to call myAsyncFunc go goroutine 2")
+	go myAsyncFunc(2, 1, done)
 }
 
 func runFour() {
 	done := make(chan string)
-	fmt.Println("Main going to call hello go goroutine 1")
-	go hello(1, 5, done)
-	fmt.Println("Main going to call hello go goroutine 2")
-	go hello(2, 1, done)
+	fmt.Println("Main going to call myAsyncFunc go goroutine 1")
+	go myAsyncFunc(1, 5, done)
+	fmt.Println("Main going to call myAsyncFunc go goroutine 2")
+	go myAsyncFunc(2, 1, done)
 	y := <-done
 	fmt.Println("Main received data x", y)
 	fmt.Println("Calling 3")
-	go hello(3, 5, done)
+	go myAsyncFunc(3, 5, done)
 	fmt.Println("After calling 3")
 	y = <-done
 	fmt.Println("Main received data y", y)
@@ -62,14 +62,14 @@ func runFour() {
 
 func runThree() {
 	done := make(chan string)
-	fmt.Println("Main going to call hello go goroutine 1")
-	go hello(1, 5, done)
-	fmt.Println("Main going to call hello go goroutine 2")
-	go hello(2, 1, done)
+	fmt.Println("Main going to call myAsyncFunc go goroutine 1")
+	go myAsyncFunc(1, 5, done)
+	fmt.Println("Main going to call myAsyncFunc go goroutine 2")
+	go myAsyncFunc(2, 1, done)
 	y := <-done
 	fmt.Println("Main received data x", y)
 	fmt.Println("Calling 3")
-	go hello(3, 5, done)
+	go myAsyncFunc(3, 5, done)
 	fmt.Println("After calling 3")
 	y = <-done
 	fmt.Println("Main received data y", y)
@@ -83,10 +83,10 @@ func runThree() {
 
 func runTwo() {
 	done := make(chan string)
-	fmt.Println("Main going to call hello go goroutine 1")
-	go hello(1, 2, done)
-	fmt.Println("Main going to call hello go goroutine 2")
-	go hello(2, 5, done)
+	fmt.Println("Main going to call myAsyncFunc go goroutine 1")
+	go myAsyncFunc(1, 2, done)
+	fmt.Println("Main going to call myAsyncFunc go goroutine 2")
+	go myAsyncFunc(2, 5, done)
 	x := <-done
 	fmt.Println("Main received data x", x)
 	y := <-done
@@ -95,20 +95,20 @@ func runTwo() {
 
 func runOne() {
 	done := make(chan string)
-	fmt.Println("Main going to call hello go goroutine 1")
-	go hello(1, 5, done)
-	fmt.Println("Main going to call hello go goroutine 2")
-	go hello(2, 2, done)
+	fmt.Println("Main going to call myAsyncFunc go goroutine 1")
+	go myAsyncFunc(1, 15, done)
+	fmt.Println("Main going to call myAsyncFunc go goroutine 2")
+	go myAsyncFunc(2, 5, done)
 	x := <-done
 	fmt.Println("Main received data x", x)
 	y := <-done
 	fmt.Println("Main received data y", y)
 }
 
-func hello(num int, duration int, done chan string) {
-	fmt.Println("Hello(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
+func myAsyncFunc(num int, duration int, done chan string) {
+	fmt.Println("myAsyncFunc(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
 	time.Sleep(time.Duration(duration) * time.Second)
-	fmt.Println("Hello(" + strconv.Itoa(num) + ") awake.")
+	fmt.Println("myAsyncFunc(" + strconv.Itoa(num) + ") awake.")
 	done <- strconv.Itoa(num)
-	fmt.Println("End of hello()")
+	fmt.Println("End of myAsyncFunc()")
 }
