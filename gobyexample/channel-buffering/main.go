@@ -7,8 +7,14 @@ import (
 	"time"
 )
 
+// https://medium.com/a-journey-with-go/go-buffered-and-unbuffered-channels-29a107c00268
+
 /*
 Channels are a typed conduit through which you can send and receive values with the channel operator, <-
+*/
+
+/*
+If the channel is unbuffered, the sender blocks until the receiver has received the value
 */
 func main() {
 	fmt.Println("Begin")
