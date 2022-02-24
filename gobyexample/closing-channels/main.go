@@ -3,23 +3,24 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"os"
 	"strconv"
 	"time"
 )
 
 func doInts() {
-
-	jobs := make(chan int, 5)
+	jobs := make(chan int, 2)
 	done := make(chan bool)
 
 	go func() {
+		fmt.Println("---")
 		for {
+			fmt.Println("\tBefore\tlength:", len(jobs))
 			j, more := <-jobs
 			if more {
-				fmt.Println("received job", j)
+				fmt.Println("\tAfter\tlength:", len(jobs), "j:", j, "more:", more)
+				fmt.Println("Received job", j)
 			} else {
-				fmt.Println("received all jobs")
+				fmt.Println("Received all jobs")
 				done <- true
 				return
 			}
@@ -27,57 +28,19 @@ func doInts() {
 	}()
 
 	for j := 1; j <= 3; j++ {
+		fmt.Println("Preparing to send job", j)
 		jobs <- j
-		fmt.Println("sent job", j)
+		fmt.Println("Sent job", j)
 	}
+	fmt.Println("Sent all jobs. Preparing to close.")
 	close(jobs)
-	fmt.Println("sent all jobs")
-
-	fmt.Println(<-done)
-}
-
-func doStrings() {
-
-	jobs := make(chan string, 5)
-	done := make(chan bool)
-
-	go func() {
-		for {
-			j, more := <-jobs
-			if more {
-				fmt.Println("received job", j)
-			} else {
-				fmt.Println("received all jobs")
-				done <- true
-				return
-			}
-		}
-	}()
-
-	for j := 1; j <= 3; j++ {
-		fmt.Println("sent job", j)
-		myAsyncFunc(j, jobs)
-	}
-	close(jobs)
-	fmt.Println("sent all jobs")
-
-	fmt.Println(<-done) //blocking using the synchronization technique
+	fmt.Println("Jobs closed")
+	fmt.Println("<-done", <-done) //blocking using the synchronization technique
 }
 
 func main() {
 	fmt.Println("Begin")
-
-	args := os.Args[1:]
-	if len(args) == 0 {
-		fmt.Println("Enter a val")
-		return
-	}
-	switch args[0] {
-	case "1":
-		doInts()
-	case "2":
-		doStrings()
-	}
+	doInts()
 }
 
 func myAsyncFunc(num int, done chan string) {
