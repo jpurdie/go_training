@@ -10,7 +10,8 @@ import (
 // https://medium.com/a-journey-with-go/go-buffered-and-unbuffered-channels-29a107c00268
 
 /*
-Channels are a typed conduit through which you can send and receive values with the channel operator, <-
+Channels are a typed conduit through which you can send and receive values with
+the channel operator, <-
 */
 
 /*

@@ -8,7 +8,8 @@ import (
 )
 
 /*
-Channels are a typed conduit through which you can send and receive values with the channel operator, <-
+Channels are a typed conduit through which you can send and receive values with
+the channel operator, <-
 */
 func main() {
 	fmt.Println("Begin")
@@ -35,17 +36,13 @@ func main() {
 
 func runFive() { // removing channel receivers as a test.
 	done := make(chan string)
-	fmt.Println("Main going to call myAsyncFunc go goroutine 1")
 	go myAsyncFunc(1, 5, done)
-	fmt.Println("Main going to call myAsyncFunc go goroutine 2")
 	go myAsyncFunc(2, 1, done)
 }
 
 func runFour() {
 	done := make(chan string)
-	fmt.Println("Main going to call myAsyncFunc go goroutine 1")
 	go myAsyncFunc(1, 5, done)
-	fmt.Println("Main going to call myAsyncFunc go goroutine 2")
 	go myAsyncFunc(2, 1, done)
 	y := <-done
 	fmt.Println("Main received data x", y)
@@ -62,15 +59,11 @@ func runFour() {
 
 func runThree() {
 	done := make(chan string)
-	fmt.Println("Main going to call myAsyncFunc go goroutine 1")
 	go myAsyncFunc(1, 5, done)
-	fmt.Println("Main going to call myAsyncFunc go goroutine 2")
 	go myAsyncFunc(2, 1, done)
 	y := <-done
 	fmt.Println("Main received data x", y)
-	fmt.Println("Calling 3")
 	go myAsyncFunc(3, 5, done)
-	fmt.Println("After calling 3")
 	y = <-done
 	fmt.Println("Main received data y", y)
 
@@ -83,9 +76,7 @@ func runThree() {
 
 func runTwo() {
 	done := make(chan string)
-	fmt.Println("Main going to call myAsyncFunc go goroutine 1")
 	go myAsyncFunc(1, 2, done)
-	fmt.Println("Main going to call myAsyncFunc go goroutine 2")
 	go myAsyncFunc(2, 5, done)
 	x := <-done
 	fmt.Println("Main received data x", x)
@@ -95,9 +86,7 @@ func runTwo() {
 
 func runOne() {
 	done := make(chan string)
-	fmt.Println("Main going to call myAsyncFunc go goroutine 1")
 	go myAsyncFunc(1, 15, done)
-	fmt.Println("Main going to call myAsyncFunc go goroutine 2")
 	go myAsyncFunc(2, 5, done)
 	x := <-done
 	fmt.Println("Main received data x", x)
@@ -106,7 +95,7 @@ func runOne() {
 }
 
 func myAsyncFunc(num int, duration int, done chan string) {
-	fmt.Println("myAsyncFunc(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
+	fmt.Println("(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
 	time.Sleep(time.Duration(duration) * time.Second)
 	fmt.Println("myAsyncFunc(" + strconv.Itoa(num) + ") awake.")
 	done <- strconv.Itoa(num)
