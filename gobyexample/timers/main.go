@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 )
 
 func main() {
 
-	timer1 := time.NewTimer(3 * time.Second)
 	/*
 		Timers represent a single event in the future.
 		You tell the timer how long you want to wait, and it provides a channel
@@ -19,11 +19,15 @@ func main() {
 		One reason a timer may be useful is
 		that you can cancel the timer before it fires. Here’s an example of that.
 	*/
-	fmt.Println("Timer 1 pre-fired", time.Now())
-	<-timer1.C
-	fmt.Println("Timer 1 fired", time.Now())
+	a := 3
+	timer1 := time.NewTimer(time.Duration(a) * time.Second)
+	begin := time.Now()
+	fmt.Println("Timer 1 pre-fired")
+	<-timer1.C // it will wait here for 3 seconds
+	fmt.Println("Timer 1 fired", "Should be ~"+strconv.Itoa(a)+"s. And it is...", time.Since(begin))
 
-	timer2 := time.NewTimer(2 * time.Second)
+	a = 2
+	timer2 := time.NewTimer(time.Duration(a) * time.Second)
 	go func() {
 		fmt.Println("Timer 2 pre-fired", time.Now())
 		<-timer2.C
