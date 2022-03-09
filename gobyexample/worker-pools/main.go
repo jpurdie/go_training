@@ -23,7 +23,7 @@ func main() {
 	fmt.Println("Before worker calls", fmt.Sprint(time.Now().UnixMicro()))
 
 	for w := 1; w <= 3; w++ {
-		go worker(w, jobs, results) //this creates 3 "workers" which will continue to process
+		go worker(w, jobs, results) //this creates 3 "worker pools" which will continue to process while the jobs channel is being sent to.
 	}
 
 	fmt.Println("After worker calls", fmt.Sprint(time.Now().UnixMicro()))
