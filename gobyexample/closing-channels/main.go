@@ -14,10 +14,8 @@ func doInts() {
 	go func() {
 		fmt.Println("---")
 		for {
-			fmt.Println("\tBefore\tlength:", len(jobs))
 			j, more := <-jobs
 			if more {
-				fmt.Println("\tAfter\tlength:", len(jobs), "j:", j, "more:", more)
 				fmt.Println("Received job", j)
 			} else {
 				fmt.Println("Received all jobs")
@@ -43,7 +41,7 @@ func main() {
 	doInts()
 }
 
-func myAsyncFunc(num int, done chan string) {
+func worker(num int, done chan string) {
 	rand.Seed(time.Now().UnixNano())
 	a, b := 1, 5
 	n := a + rand.Intn(b-a+1)

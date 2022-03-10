@@ -6,12 +6,12 @@ import (
 	"time"
 )
 
-func hello(num int, duration int, done chan string) {
-	fmt.Println("Hello(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
+func worker(num int, duration int, done chan string) {
+	fmt.Println("worker(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
 	time.Sleep(time.Duration(duration) * time.Second)
-	fmt.Println("Hello(" + strconv.Itoa(num) + ") awake.")
+	fmt.Println("worker(" + strconv.Itoa(num) + ") awake.")
 	done <- strconv.Itoa(num)
-	fmt.Println("Exiting hello(" + strconv.Itoa(num) + ")")
+	fmt.Println("Exiting worker(" + strconv.Itoa(num) + ")")
 }
 
 func takesReadonly(c <-chan string) {
@@ -24,7 +24,7 @@ func returnsReadOnly() <-chan string {
 	go func() {
 		fmt.Println("Entering anon func")
 		//go hello(1, 2, c) // This also works as it starts a sub sub gorouting
-		hello(1, 2, c)
+		worker(1, 2, c)
 		fmt.Println("Exiting anon func")
 	}()
 	fmt.Println("Exiting returnsReadOnly()")

@@ -14,7 +14,7 @@ func main() {
 	*/
 
 	c1 := make(chan string, 1)
-	go myAsyncFunc(1, 2, c1)
+	go worker(1, 2, c1)
 
 	select {
 	case res := <-c1:
@@ -24,7 +24,7 @@ func main() {
 	}
 
 	c2 := make(chan string, 1)
-	go myAsyncFunc(2, 2, c2)
+	go worker(2, 2, c2)
 	select {
 	case res := <-c2:
 		fmt.Println(res)
@@ -33,10 +33,10 @@ func main() {
 	}
 }
 
-func myAsyncFunc(num int, duration int, done chan string) {
-	fmt.Println("#" + strconv.Itoa(num) + " sleeping for: " + strconv.Itoa(duration))
+func worker(num int, duration int, done chan string) {
+	fmt.Println("worker(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
 	time.Sleep(time.Duration(duration) * time.Second)
-	fmt.Println("#" + strconv.Itoa(num) + " awake.")
-	done <- "Hello from #" + strconv.Itoa(num)
-	fmt.Println("End of #" + strconv.Itoa(num))
+	fmt.Println("worker(" + strconv.Itoa(num) + ") awake.")
+	done <- strconv.Itoa(num)
+	fmt.Println("End of worker()")
 }

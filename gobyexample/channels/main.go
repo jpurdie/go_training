@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"time"
 )
@@ -13,71 +12,15 @@ the channel operator, <-
 */
 func main() {
 	fmt.Println("Begin")
-
-	args := os.Args[1:]
-	if len(args) == 0 {
-		fmt.Println("Enter a val")
-		return
-	}
-	switch args[0] {
-	case "1":
-		runOne()
-	case "2":
-		runTwo()
-	case "3":
-		runThree()
-	case "4":
-		runFour()
-	case "5":
-		runFive()
-	}
-
-}
-
-func runFive() { // removing channel receivers as a test.
-	done := make(chan string)
-	go myAsyncFunc(1, 5, done)
-	go myAsyncFunc(2, 1, done)
-}
-
-func runFour() {
-	done := make(chan string)
-	go myAsyncFunc(1, 5, done)
-	go myAsyncFunc(2, 1, done)
-	y := <-done
-	fmt.Println("Main received data x", y)
-	fmt.Println("Calling 3")
-	go myAsyncFunc(3, 5, done)
-	fmt.Println("After calling 3")
-	y = <-done
-	fmt.Println("Main received data y", y)
-	fmt.Println("Before last done")
-	<-done
-	fmt.Println("After done")
-
-}
-
-func runThree() {
-	done := make(chan string)
-	go myAsyncFunc(1, 5, done)
-	go myAsyncFunc(2, 1, done)
-	y := <-done
-	fmt.Println("Main received data x", y)
-	go myAsyncFunc(3, 5, done)
-	y = <-done
-	fmt.Println("Main received data y", y)
-
-	// Why is 3 never received?
-	/*
-		By default channels are unbuffered, meaning that they will only accept
-		sends (chan <-) if there is a corresponding receive (<- chan) ready to receive the sent value.
-	*/
+	runOne()
+	runTwo()
+	fmt.Println("End")
 }
 
 func runTwo() {
 	done := make(chan string)
-	go myAsyncFunc(1, 2, done)
-	go myAsyncFunc(2, 5, done)
+	go worker(1, 2, done)
+	go worker(2, 5, done)
 	x := <-done
 	fmt.Println("Main received data x", x)
 	y := <-done
@@ -86,18 +29,18 @@ func runTwo() {
 
 func runOne() {
 	done := make(chan string)
-	go myAsyncFunc(1, 15, done)
-	go myAsyncFunc(2, 5, done)
+	go worker(1, 15, done)
+	go worker(2, 5, done)
 	x := <-done
 	fmt.Println("Main received data x", x)
 	y := <-done
 	fmt.Println("Main received data y", y)
 }
 
-func myAsyncFunc(num int, duration int, done chan string) {
-	fmt.Println("(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
+func worker(num int, duration int, done chan string) {
+	fmt.Println("worker(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
 	time.Sleep(time.Duration(duration) * time.Second)
-	fmt.Println("myAsyncFunc(" + strconv.Itoa(num) + ") awake.")
+	fmt.Println("worker(" + strconv.Itoa(num) + ") awake.")
 	done <- strconv.Itoa(num)
-	fmt.Println("End of myAsyncFunc()")
+	fmt.Println("End of worker()")
 }

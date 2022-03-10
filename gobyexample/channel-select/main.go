@@ -13,9 +13,9 @@ func main() {
 	c2 := make(chan string)
 	c3 := make(chan string)
 
-	go myAsyncFunc(1, 5, c1)
-	go myAsyncFunc(2, 3, c2)
-	go myAsyncFunc(3, 1, c3)
+	go worker(1, 5, c1)
+	go worker(2, 3, c2)
+	go worker(3, 1, c3)
 
 	for i := 0; i < 3; i++ {
 		fmt.Println("begin i", i)
@@ -34,10 +34,10 @@ func main() {
 	fmt.Println(diff)
 }
 
-func myAsyncFunc(num int, duration int, done chan string) {
-	fmt.Println("#" + strconv.Itoa(num) + " sleeping for: " + strconv.Itoa(duration))
+func worker(num int, duration int, done chan string) {
+	fmt.Println("worker(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
 	time.Sleep(time.Duration(duration) * time.Second)
-	fmt.Println("#" + strconv.Itoa(num) + " awake.")
-	done <- "Hello from #" + strconv.Itoa(num)
-	fmt.Println("End of #" + strconv.Itoa(num))
+	fmt.Println("worker(" + strconv.Itoa(num) + ") awake.")
+	done <- strconv.Itoa(num)
+	fmt.Println("End of worker()")
 }

@@ -35,38 +35,38 @@ func main() {
 	}
 }
 
-func printChannelDeets(c chan string) {
+func channelDetails(c chan string) {
 	fmt.Println("Length", len(c), "Capacity", cap(c))
 }
 
 func runTwo() { //buffered
 	done := make(chan string, 2)
-	printChannelDeets(done)
+	channelDetails(done)
 	done <- "unbuffered 1"
-	printChannelDeets(done)
+	channelDetails(done)
 	done <- "unbuffered 2"
-	printChannelDeets(done)
+	channelDetails(done)
 	fmt.Println(<-done)
-	printChannelDeets(done)
+	channelDetails(done)
 	fmt.Println(<-done)
-	printChannelDeets(done)
+	channelDetails(done)
 
 }
 
 func runOne() { //unbuffered. Will not work due to channel being occupied.
 	done := make(chan string)
-	printChannelDeets(done)
+	channelDetails(done)
 	done <- "unbuffered 1"
-	printChannelDeets(done)
+	channelDetails(done)
 	done <- "unbuffered 2" // will fail here with deadlock error
 	fmt.Println(<-done)
 	fmt.Println(<-done)
 }
 
-func hello(num int, duration int, done chan string) {
-	fmt.Println("Hello(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
+func worker(num int, duration int, done chan string) {
+	fmt.Println("worker(" + strconv.Itoa(num) + ") sleeping for: " + strconv.Itoa(duration))
 	time.Sleep(time.Duration(duration) * time.Second)
-	fmt.Println("Hello(" + strconv.Itoa(num) + ") awake.")
+	fmt.Println("worker(" + strconv.Itoa(num) + ") awake.")
 	done <- strconv.Itoa(num)
-	fmt.Println("End of hello(" + strconv.Itoa(num) + ")")
+	fmt.Println("End of worker(" + strconv.Itoa(num) + ")")
 }
