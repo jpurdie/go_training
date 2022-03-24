@@ -9,7 +9,7 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceRoot}/gobyexample//recursion//main.go"
+      "program": "${workspaceRoot}/gobyexample//mutexes//main.go"
     }
   ]
 }
