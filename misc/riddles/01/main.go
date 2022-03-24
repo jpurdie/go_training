@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -143,14 +144,16 @@ func buildScenarios(num int) []scenario {
 	scenarios := make([]scenario, 0)
 
 	for i := 0; i < num; i++ {
+		fmt.Println("Building scenario " + strconv.Itoa(i))
 		s := scenario{}
 		s.Num = i
 		crimeStatuses := []string{"accomplice", "witness", "murderer", "victim"}
 
 		minAgeChild := 1
 		maxAgeChild := 20
+		d := time.Duration(time.Nanosecond * 1)
 
-		time.Sleep(3)
+		time.Sleep(d)
 		rand.Seed(time.Now().UnixNano())
 
 		statusInt := rand.Intn(len(crimeStatuses))
@@ -158,7 +161,7 @@ func buildScenarios(num int) []scenario {
 		crimeStatuses = remove(crimeStatuses, statusInt)
 		s.Persons = append(s.Persons, father)
 
-		time.Sleep(3)
+		time.Sleep(d)
 		rand.Seed(time.Now().UnixNano())
 
 		statusInt = rand.Intn(len(crimeStatuses))
@@ -166,19 +169,30 @@ func buildScenarios(num int) []scenario {
 		crimeStatuses = remove(crimeStatuses, statusInt)
 		s.Persons = append(s.Persons, mother)
 
-		time.Sleep(3)
+		time.Sleep(d)
 		rand.Seed(time.Now().UnixNano())
 
 		statusInt = rand.Intn(len(crimeStatuses))
-		son := person{FamilyStatus: "son", Age: rand.Intn(maxAgeChild-minAgeChild) + minAgeChild, Gender: "M", CrimeStatus: crimeStatuses[statusInt]}
+		sonAge := rand.Intn(maxAgeChild-minAgeChild) + minAgeChild
+		son := person{FamilyStatus: "son", Age: sonAge, Gender: "M", CrimeStatus: crimeStatuses[statusInt]}
 		crimeStatuses = remove(crimeStatuses, statusInt)
 		s.Persons = append(s.Persons, son)
 
-		time.Sleep(3)
+		time.Sleep(d)
 		rand.Seed(time.Now().UnixNano())
 
 		statusInt = rand.Intn(len(crimeStatuses))
-		daughter := person{FamilyStatus: "daughter", Age: rand.Intn(maxAgeChild-minAgeChild) + minAgeChild, Gender: "F", CrimeStatus: crimeStatuses[statusInt]}
+
+		daughterAge := rand.Intn(maxAgeChild-minAgeChild) + minAgeChild
+
+		for sonAge == daughterAge { //making sure the ages don't match
+			fmt.Println(sonAge, daughterAge, "Same age. Recalculating.")
+			time.Sleep(d)
+			daughterAge = rand.Intn(maxAgeChild-minAgeChild) + minAgeChild
+		}
+
+		daughter := person{FamilyStatus: "daughter", Age: daughterAge, Gender: "F", CrimeStatus: crimeStatuses[statusInt]}
+
 		crimeStatuses = remove(crimeStatuses, statusInt)
 		s.Persons = append(s.Persons, daughter)
 		scenarios = append(scenarios, s)
@@ -194,79 +208,105 @@ func removeScenario(slice []scenario, s int) []scenario {
 	return append(slice[:s], slice[s+1:]...)
 }
 
-func main() {
-	rulePass := false
+func filterScenarios(scenarios []scenario) []scenario {
 	newScenarios := make([]scenario, 0)
-	scenarios := buildScenarios(10)
+	fmt.Println()
 
 	fmt.Println("Rule 1) The witness and the accomplice of the murdered are not the same sex.")
-
 	for _, sc := range scenarios {
-		rulePass = ruleOnePass(sc)
-		if rulePass {
+		if ruleOnePass(sc) {
 			newScenarios = append(newScenarios, sc)
 		}
 	}
 
 	fmt.Println("Rule 2) The oldest person of the family and the witness were a man and a woman.")
-
 	scenarios = newScenarios
 	newScenarios = make([]scenario, 0)
 	for _, sc := range scenarios {
-		rulePass = ruleTwoPass(sc)
-		if rulePass {
+		if ruleTwoPass(sc) {
 			newScenarios = append(newScenarios, sc)
 		}
 	}
 
 	fmt.Println("Rule 3) The youngest person and the victim are of the same sex.")
-
 	scenarios = newScenarios
 	newScenarios = make([]scenario, 0)
 	for _, sc := range scenarios {
-		rulePass = ruleThree(sc)
-		if rulePass {
+		if ruleThree(sc) {
 			newScenarios = append(newScenarios, sc)
 		}
 	}
 
 	fmt.Println("Rule 4) The murderer's accomplice was older than the poor victim.")
-
 	scenarios = newScenarios
 	newScenarios = make([]scenario, 0)
 	for _, sc := range scenarios {
-		rulePass = ruleFour(sc)
-		if rulePass {
+		if ruleFour(sc) {
 			newScenarios = append(newScenarios, sc)
 		}
 	}
 
 	fmt.Println("Rule 5) The father was the oldest member of the family.")
-
 	scenarios = newScenarios
 	newScenarios = make([]scenario, 0)
 	for _, sc := range scenarios {
-		rulePass = ruleFive(sc)
-		if rulePass {
+		if ruleFive(sc) {
 			newScenarios = append(newScenarios, sc)
 		}
 	}
 
 	fmt.Println("Rule 6) The murderer was not the youngest in the family")
-
 	scenarios = newScenarios
 	newScenarios = make([]scenario, 0)
 	for _, sc := range scenarios {
-		rulePass = ruleSix(sc)
-		if rulePass {
+		if ruleSix(sc) {
 			newScenarios = append(newScenarios, sc)
 		}
 	}
 
-	fmt.Println("-- Passed --")
+	fmt.Println("Scenarios Passed: " + strconv.Itoa(len(newScenarios)))
+	return newScenarios
+}
 
+func summarizeScenarios(scenarios []scenario) {
+	fatherRoles := make(map[string]int)
+	motherRoles := make(map[string]int)
+	sonRoles := make(map[string]int)
+	daughterRoles := make(map[string]int)
+	fmt.Println()
+	fmt.Println("Filtered:")
 	for _, sc := range scenarios {
 		fmt.Println(sc)
+		for _, p := range sc.Persons {
+			if p.FamilyStatus == "father" {
+				fatherRoles[p.CrimeStatus]++
+			}
+			if p.FamilyStatus == "mother" {
+				motherRoles[p.CrimeStatus]++
+			}
+			if p.FamilyStatus == "son" {
+				sonRoles[p.CrimeStatus]++
+			}
+			if p.FamilyStatus == "daughter" {
+				daughterRoles[p.CrimeStatus]++
+			}
+		}
 	}
+	fmt.Println()
+	fmt.Println("Summary:")
+	fmt.Println("Father", fatherRoles)
+	fmt.Println("Mother", motherRoles)
+	fmt.Println("Son", sonRoles)
+	fmt.Println("Daughter", daughterRoles)
+}
+
+// https://www.youtube.com/watch?v=59gjBAZAVNk
+func main() {
+	fmt.Println("Begin Process.")
+	scenarios := buildScenarios(100)
+	fmt.Println("Scenarios Built. Begin processing.")
+	filteredScenarios := filterScenarios(scenarios)
+	fmt.Println("Scenarios Filtered. Begin summary.")
+	summarizeScenarios(filteredScenarios)
 
 }
